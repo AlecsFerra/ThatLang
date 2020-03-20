@@ -164,8 +164,8 @@ fn analyze_binary(l_type: Type, op: Operator, r_type: Type) -> Result<Type, Stri
     match op {
         Operator::Eq | Operator::Gt | Operator::Lt => Ok(Type::Boolean),
         Operator::And | Operator::Or => {
-            if l_type == Type::Boolean {
-                Err(format!("Could not perform bitwise  operations on boolean"))
+            if l_type == Type::FloatingPoint {
+                Err(format!("Could not perform bitwise  operations on floats"))
             } else {
                 Ok(l_type)
             }

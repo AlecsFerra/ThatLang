@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter, Result};
 use std::convert::TryInto;
 use std::cmp::Ordering;
 
-#[derive(Debug, Clone, PartialEq, Copy)]
+#[derive(Clone, PartialEq, Copy)]
 pub enum Value {
     IntegerValue(i32),
     FloatValue(f32),

@@ -1,7 +1,6 @@
 use crate::execution::value::Value;
 use std::collections::HashMap;
 
-#[derive(Clone)]
 pub struct Memory {
     memory_frame: Vec<HashMap<String, Value>>
 }

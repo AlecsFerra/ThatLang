@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum Operator {
     Add,
     Sub,
@@ -31,7 +31,7 @@ impl Display for Operator {
     }
 }
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq)]
 pub enum TokenType {
     Id(String),
     LRoundBracket,
@@ -76,7 +76,7 @@ impl Display for TokenType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Token {
     pub t_type: TokenType,
     pub line: u32,
