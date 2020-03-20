@@ -4,7 +4,7 @@ use std::io::Read;
 use crate::parsing::lexer::Lexer;
 use crate::parsing::parser::Parser;
 use crate::parsing::analyzer::analyze;
-use crate::execution::interpreter::eval;
+use crate::execution::interpreter::Interpreter;
 
 mod parsing;
 mod execution;
@@ -22,7 +22,10 @@ fn main() {
                 Err(error) => println!("ERROR while parsing: {}", error),
                 Ok(ast) => match analyze(ast.clone()) {
                     Some(error) => println!("ERROR while analyzing: {}", error),
-                    None => eval(ast)
+                    None => {
+                        let mut interpreter = Interpreter::new();
+                        interpreter.eval(ast)
+                    }
                 }
             }
         }

@@ -8,6 +8,7 @@ pub enum Value {
     IntegerValue(i32),
     FloatValue(f32),
     BooleanValue(bool),
+    Unit,
 }
 
 impl Value {
@@ -36,7 +37,8 @@ impl Display for Value {
         match self {
             Value::IntegerValue(_) => write!(f, "integer"),
             Value::FloatValue(_) => write!(f, "float"),
-            Value::BooleanValue(_) => write!(f, "boolean")
+            Value::BooleanValue(_) => write!(f, "boolean"),
+            Value::Unit => write!(f, "unit")
         }
     }
 }
@@ -92,7 +94,7 @@ impl BitXor for Value {
             Value::IntegerValue(this) => Value::IntegerValue(this.pow(rhs.expect_int().try_into().unwrap())),
             Value::FloatValue(this) => Value::FloatValue(this.powf(rhs.expect_float())),
             Value::BooleanValue(this) => Value::BooleanValue(this ^ rhs.expect_bool()),
-            //_ => unreachable!("Error while executing: {}, {} in a pow/xor block", self, rhs)
+            _ => unreachable!("Error while executing: {}, {} in a pow/xor block", self, rhs)
         }
     }
 }
@@ -125,7 +127,7 @@ impl PartialOrd for Value {
             Value::IntegerValue(this) => this.partial_cmp(&other.expect_int()),
             Value::FloatValue(this) => this.partial_cmp(&other.expect_float()),
             Value::BooleanValue(this) => this.partial_cmp(&other.expect_bool()),
-            //_ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
+            _ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
         }
     }
 
@@ -134,7 +136,7 @@ impl PartialOrd for Value {
             Value::IntegerValue(this) => this.lt(&other.expect_int()),
             Value::FloatValue(this) => this.lt(&&other.expect_float()),
             Value::BooleanValue(this) => this.lt(&other.expect_bool()),
-            //_ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
+            _ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
         }
     }
 
@@ -143,7 +145,7 @@ impl PartialOrd for Value {
             Value::IntegerValue(this) => this.le(&other.expect_int()),
             Value::FloatValue(this) => this.le(&&other.expect_float()),
             Value::BooleanValue(this) => this.le(&other.expect_bool()),
-            //_ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
+            _ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
         }
     }
 
@@ -152,7 +154,7 @@ impl PartialOrd for Value {
             Value::IntegerValue(this) => this.gt(&other.expect_int()),
             Value::FloatValue(this) => this.gt(&&other.expect_float()),
             Value::BooleanValue(this) => this.gt(&other.expect_bool()),
-            //_ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
+            _ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
         }
     }
 
@@ -161,7 +163,7 @@ impl PartialOrd for Value {
             Value::IntegerValue(this) => this.ge(&other.expect_int()),
             Value::FloatValue(this) => this.ge(&&other.expect_float()),
             Value::BooleanValue(this) => this.ge(&other.expect_bool()),
-            //_ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
+            _ => unreachable!("Error while executing: {}, {} in a eq block", self, other)
         }
     }
 }
