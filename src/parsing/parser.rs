@@ -54,6 +54,7 @@ impl Parser<'_> {
                     TokenType::RCurlyBracket => None,
                     TokenType::Fn => Some(self.parse_function()),
                     TokenType::Id(_) => Some(self.parse_assignment_or_declaration()),
+                    TokenType::Print => Some(self.parse_print()),
                     TokenType::If => Some(self.parse_if()),
                     TokenType::While => Some(self.parse_while()),
                     TokenType::For => Some(self.parse_for()),
@@ -78,11 +79,20 @@ impl Parser<'_> {
                 //Assignment
                 TokenType::Assignment => self.parse_assignment(type_or_id),
                 //Declaration
-                TokenType::Id(id) => self.parse_declaration(type_or_id),
+                TokenType::Id(_) => self.parse_declaration(type_or_id),
                 unexpected => Err(format!("Expected ':=' or 'identifier' but {} found on line {} char {}",
                                           unexpected, token.line, token.char))
             }
         }
+    }
+
+    fn parse_print(&mut self) -> Result<AST, String> {
+        self.tokens.next();
+        let expr = match self.parse_expression() {
+            Err(msg) => return Err(msg),
+            Ok(expr) => expr
+        };
+        Ok(AST::Print(expr))
     }
 
     fn parse_assignment(&mut self, id: String) -> Result<AST, String> {
@@ -95,7 +105,7 @@ impl Parser<'_> {
     }
 
     fn parse_declaration(&mut self, type_name: String) -> Result<AST, String> {
-        let (id, line, char) = match self.tokens.next() {
+        let (id, _, _) = match self.tokens.next() {
             Some(token) => match &token.t_type {
                 TokenType::Id(id) => (id, token.line, token.char),
                 _ => panic!("Parser bad state called expected identifier")
@@ -143,7 +153,7 @@ impl Parser<'_> {
                                            token.t_type, token.line, token.char));
                     }
                 }
-                TokenType::Operator(op, priority, left_ass) => {
+                TokenType::Operator(_, priority, left_ass) => {
                     while let Some(top) = operators.top() {
                         match top.t_type {
                             TokenType::LRoundBracket => break,
@@ -162,7 +172,7 @@ impl Parser<'_> {
                     }
                     operators.push(token.clone());
                 }
-                unexpected => return Err(format!("Expression: Unexpected '{}' found on line {} char {}",
+                _ => return Err(format!("Expression: Unexpected '{}' found on line {} char {}",
                                                  token.t_type, token.line, token.char))
             }
         }

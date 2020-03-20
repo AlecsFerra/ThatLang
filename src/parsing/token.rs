@@ -14,6 +14,23 @@ pub enum Operator {
     Lt
 }
 
+impl Display for Operator {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        match self {
+            Operator::Add => write!(f, "+"),
+            Operator::Sub => write!(f, "-"),
+            Operator::Mul => write!(f, "*"),
+            Operator::Div => write!(f, "/"),
+            Operator::Pow => write!(f, "^"),
+            Operator::And => write!(f, "&"),
+            Operator::Or => write!(f, "|"),
+            Operator::Eq => write!(f, "="),
+            Operator::Gt => write!(f, ">"),
+            Operator::Lt => write!(f, "<")
+        }
+    }
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub enum TokenType {
     Id(String),
@@ -25,6 +42,7 @@ pub enum TokenType {
     FloatLiteral(f32),
     BooleanLiteral(bool),
     Operator(Operator, u8, bool),
+    Print,
     Semicolon,
     Fn,
     Comma,
@@ -53,6 +71,7 @@ impl Display for TokenType {
             TokenType::If => write!(f, "if"),
             TokenType::While => write!(f, "while"),
             TokenType::For => write!(f, "for"),
+            TokenType::Print =>  write!(f, "print"),
         }
     }
 }

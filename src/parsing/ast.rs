@@ -31,7 +31,7 @@ impl Display for Type {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expression {
     IntegerLiteral(i32),
     FloatLiteral(f32),
@@ -40,11 +40,12 @@ pub enum Expression {
     Variable(String),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AST {
     Block(Vec<AST>),
     Assign(String, Expression),
     VarDeclaration(Type, String),
+    Print(Expression),
     VarDeclarationAndAssignment(Type, String, Expression),
     IfStatement(Expression, Box<AST>),
     WhileStatement(Expression, Box<AST>),

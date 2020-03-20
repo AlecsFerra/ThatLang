@@ -71,6 +71,12 @@ fn analyze_ast(node: AST, symbol_table: STable) -> Result<STable, String> {
                 Ok(n_symbol_table)
             }
         },
+        AST::Print(expr) => {
+            match analyze_expression(expr, symbol_table.clone()) {
+                Err(err) => Err(err),
+                Ok(_) => Ok(symbol_table)
+            }
+        }
         AST::IfStatement(cond, block) => {
             //println!("Analyzing declaration if");
             let n_symbol = symbol_table.clone();
@@ -147,29 +153,29 @@ fn analyze_expression(exp: Expression, symbol_table: STable) -> Result<Type, Str
 
 fn analyze_binary(l_type: Type, op: Operator, r_type: Type) -> Result<Type, String> {
     if l_type == Type::Unit || l_type.is_custom() {
-        return Err(format!("Left operand cannot be subject of binary operations"));
+        return Err(format!("Left operand cannot be subject of operator {}", op));
     }
     if r_type == Type::Unit || r_type.is_custom() {
-        return Err(format!("Right operand cannot be subject of binary operations"));
+        return Err(format!("Right operand cannot be subject of operator {}", op));
+    }
+    if r_type != l_type {
+        return Err(format!("Unmatched values ({}, {}) in binary operator {}", l_type, r_type, op))
     }
     match op {
-        Operator::Eq | Operator::Gt | Operator::Lt => if r_type == l_type {
-            Ok(Type::Boolean)
-        } else {
-            Err(format!("Comparison operator: expected type {} but {} found", l_type, r_type))
-        },
-        Operator::And | Operator::Or  => if r_type == l_type {
-            Ok(l_type)
-        } else {
-            Err(format!("Logical operator: expected type {} but {} found", l_type, r_type))
-        }
-        Operator::Add | Operator::Sub | Operator::Mul | Operator::Div | Operator::Pow => {
-            if l_type == Type::Boolean || r_type == Type::Boolean {
-                return Err(format!("Could not perform mathematical operations on boolean"));
-            } else if l_type == Type::FloatingPoint || r_type == Type::FloatingPoint {
-                Ok(Type::FloatingPoint)
+        Operator::Eq | Operator::Gt | Operator::Lt => Ok(Type::Boolean),
+        Operator::And | Operator::Or => {
+            if l_type == Type::Boolean {
+                Err(format!("Could not perform bitwise  operations on boolean"))
             } else {
-                Ok(Type::Integer)
+                Ok(l_type)
+            }
+        }
+        Operator::Pow => Ok(l_type),
+        Operator::Add | Operator::Sub | Operator::Mul | Operator::Div  => {
+            if l_type == Type::Boolean {
+                Err(format!("Could not perform mathematical operations on boolean"))
+            } else {
+                Ok(l_type)
             }
         }
     }

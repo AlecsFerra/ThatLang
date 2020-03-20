@@ -15,6 +15,7 @@ lazy_static! {
         m.insert("if", TokenType::If);
         m.insert("while", TokenType::While);
         m.insert("for", TokenType::For);
+        m.insert("print", TokenType::Print);
         m
     };
 }
