@@ -129,7 +129,7 @@ impl Parser<'_> {
                     };
                     // self.expect(TokenType::Semicolon);
                     Ok(AST::VarDeclarationAndAssignment(found_type, id.to_string(), expr))
-                },
+                }
                 //Simple declaration
                 _ => Ok(AST::VarDeclaration(found_type, id.to_string()))
             }
@@ -173,7 +173,7 @@ impl Parser<'_> {
                     operators.push(token.clone());
                 }
                 _ => return Err(format!("Expression: Unexpected '{}' found on line {} char {}",
-                                                 token.t_type, token.line, token.char))
+                                        token.t_type, token.line, token.char))
             }
         }
         while let Some(token) = operators.pop() {

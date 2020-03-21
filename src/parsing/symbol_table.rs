@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+
 use crate::parsing::ast::Type;
 
 pub struct SymbolTable {
@@ -6,7 +7,6 @@ pub struct SymbolTable {
 }
 
 impl SymbolTable {
-
     pub fn new() -> Self {
         Self {
             memory_frame: vec![HashMap::new()]
@@ -42,5 +42,4 @@ impl SymbolTable {
         }
         None
     }
-
 }

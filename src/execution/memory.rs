@@ -1,12 +1,12 @@
-use crate::execution::value::Value;
 use std::collections::HashMap;
+
+use crate::execution::value::Value;
 
 pub struct Memory {
     memory_frame: Vec<HashMap<String, Value>>
 }
 
 impl Memory {
-
     pub fn new() -> Self {
         Self {
             memory_frame: vec![HashMap::new()]
@@ -51,5 +51,4 @@ impl Memory {
         }
         unreachable!("Unable to find key: {} in memory", key)
     }
-
 }

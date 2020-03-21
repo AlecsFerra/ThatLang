@@ -1,5 +1,6 @@
-use crate::parsing::token::Operator;
 use std::fmt::{Display, Formatter, Result};
+
+use crate::parsing::token::Operator;
 
 #[derive(Clone, PartialEq)]
 pub enum Type {
@@ -49,5 +50,5 @@ pub enum AST {
     VarDeclarationAndAssignment(Type, String, Expression),
     IfStatement(Expression, Box<AST>),
     WhileStatement(Expression, Box<AST>),
-    ForStatement(Box<AST>, Expression, Box<AST>, Box<AST>)
+    ForStatement(Box<AST>, Expression, Box<AST>, Box<AST>),
 }

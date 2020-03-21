@@ -1,15 +1,14 @@
 use std::collections::HashMap;
 
 use crate::parsing::ast::{AST, Expression, Type};
-use crate::parsing::token::Operator;
 use crate::parsing::symbol_table::SymbolTable;
+use crate::parsing::token::Operator;
 
 pub struct StaticAnalyzer {
     symbol_table: SymbolTable
 }
 
 impl StaticAnalyzer {
-
     pub fn new() -> Self {
         Self {
             symbol_table: SymbolTable::new()
@@ -21,14 +20,14 @@ impl StaticAnalyzer {
             AST::VarDeclaration(d_type, id) => {
                 if !self.symbol_table.declare(id.clone(), d_type) {
                     return Some(format!("Cannot declare variable {} because it was already declared in this scope",
-                                        id.clone()))
+                                        id.clone()));
                 }
                 None
-            },
+            }
             AST::VarDeclarationAndAssignment(d_type, id, expr) => {
                 if !self.symbol_table.declare(id.clone(), d_type.clone()) {
                     return Some(format!("Cannot declare variable {} because it was already declared in this scope",
-                                        id.clone()))
+                                        id.clone()));
                 }
                 let expr_type = match self.analyze_expression(expr) {
                     Ok(t) => t,
@@ -36,10 +35,10 @@ impl StaticAnalyzer {
                 };
                 if d_type.clone() != expr_type {
                     return Some(format!("Mismatched types variable {} was declared {} but assigned {}",
-                                        id, d_type.clone(), expr_type))
+                                        id, d_type.clone(), expr_type));
                 }
                 None
-            },
+            }
             AST::Assign(id, expr) => {
                 let id_type = match self.symbol_table.retrieve_type(id.clone()) {
                     Some(t) => t,
@@ -51,10 +50,10 @@ impl StaticAnalyzer {
                 };
                 if id_type != expr_type {
                     return Some(format!("Mismatched types variable {} vas declared {} but assigned {}",
-                                        id.clone(), id_type, expr_type))
+                                        id.clone(), id_type, expr_type));
                 }
                 None
-            },
+            }
             AST::Print(expr) => match self.analyze_expression(expr) {
                 Err(err) => Some(err),
                 Ok(_) => None
@@ -67,7 +66,7 @@ impl StaticAnalyzer {
                     }
                 }
                 None
-            },
+            }
             AST::IfStatement(cond, then) => {
                 match self.analyze_expression(cond) {
                     Err(err) => return Some(err),
@@ -80,7 +79,7 @@ impl StaticAnalyzer {
                 }
                 self.symbol_table.remove_frame();
                 None
-            },
+            }
             AST::WhileStatement(cond, body) => {
                 match self.analyze_expression(cond) {
                     Err(err) => return Some(err),
@@ -93,7 +92,7 @@ impl StaticAnalyzer {
                 }
                 self.symbol_table.remove_frame();
                 None
-            },
+            }
             AST::ForStatement(dec, cond, inc, body) => {
                 self.symbol_table.create_frame();
                 match self.analyze(*dec) {
@@ -149,7 +148,7 @@ impl StaticAnalyzer {
             return Err(format!("Right operand cannot be subject of operator {}", op));
         }
         if r_type != l_type {
-            return Err(format!("Unmatched values ({}, {}) in binary operator {}", l_type, r_type, op))
+            return Err(format!("Unmatched values ({}, {}) in binary operator {}", l_type, r_type, op));
         }
         match op {
             Operator::Eq | Operator::Gt | Operator::Lt => Ok(Type::Boolean),
@@ -161,7 +160,7 @@ impl StaticAnalyzer {
                 }
             }
             Operator::Pow => Ok(l_type),
-            Operator::Add | Operator::Sub | Operator::Mul | Operator::Div  => {
+            Operator::Add | Operator::Sub | Operator::Mul | Operator::Div => {
                 if l_type == Type::Boolean {
                     Err(format!("Could not perform mathematical operations on boolean"))
                 } else {
@@ -170,5 +169,4 @@ impl StaticAnalyzer {
             }
         }
     }
-
 }

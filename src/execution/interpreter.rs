@@ -1,7 +1,7 @@
+use crate::execution::memory::Memory;
+use crate::execution::value::Value;
 use crate::parsing::ast::{AST, Expression};
 use crate::parsing::token::Operator;
-use crate::execution::value::Value;
-use crate::execution::memory::Memory;
 
 pub struct Interpreter {
     memory: Memory
@@ -27,26 +27,26 @@ impl Interpreter {
                     Value::Unit => "unit".to_string()
                 };
                 println!("{}", to_print);
-            },
+            }
             AST::Block(nodes) => {
                 for node in nodes {
                     self.eval(node)
                 }
-            },
+            }
             AST::IfStatement(cond, then_clause) => {
                 if self.eval_expression(cond).expect_bool() {
                     self.memory.create_frame();
                     self.eval(*then_clause);
                     self.memory.remove_frame();
                 }
-            },
+            }
             AST::WhileStatement(cond, body) => {
                 self.memory.create_frame();
                 while self.eval_expression(cond.clone()).expect_bool() {
                     self.eval(*body.clone())
                 }
                 self.memory.remove_frame();
-            },
+            }
             AST::ForStatement(dec, cond, inc, body) => {
                 self.memory.create_frame();
                 self.eval(*dec);

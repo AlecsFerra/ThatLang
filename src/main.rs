@@ -1,11 +1,10 @@
 use std::fs::File;
 use std::io::Read;
 
-use crate::parsing::lexer::Lexer;
-use crate::parsing::parser::Parser;
-
 use crate::execution::interpreter::Interpreter;
 use crate::parsing::analyzer::StaticAnalyzer;
+use crate::parsing::lexer::Lexer;
+use crate::parsing::parser::Parser;
 
 mod parsing;
 mod execution;

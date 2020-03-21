@@ -11,7 +11,7 @@ pub enum Operator {
     Or,
     Eq,
     Gt,
-    Lt
+    Lt,
 }
 
 impl Display for Operator {
@@ -49,7 +49,7 @@ pub enum TokenType {
     Assignment,
     If,
     While,
-    For
+    For,
 }
 
 impl Display for TokenType {
@@ -71,7 +71,7 @@ impl Display for TokenType {
             TokenType::If => write!(f, "if"),
             TokenType::While => write!(f, "while"),
             TokenType::For => write!(f, "for"),
-            TokenType::Print =>  write!(f, "print"),
+            TokenType::Print => write!(f, "print"),
         }
     }
 }

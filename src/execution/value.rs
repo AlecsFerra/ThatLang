@@ -1,7 +1,7 @@
-use std::ops::{Add, Sub, Mul, Div, BitAnd, BitXor, BitOr};
-use std::fmt::{Display, Formatter, Result};
-use std::convert::TryInto;
 use std::cmp::Ordering;
+use std::convert::TryInto;
+use std::fmt::{Display, Formatter, Result};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Sub};
 
 #[derive(Clone, PartialEq, Copy)]
 pub enum Value {
