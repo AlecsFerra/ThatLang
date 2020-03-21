@@ -1,4 +1,4 @@
-int t1 := 0;
+int t1 := 1;
 int t2 := 1;
 for int i := 0; i < 20; i := i + 1 {
     int next := t1 + t2;
