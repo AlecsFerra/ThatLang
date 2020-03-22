@@ -8,6 +8,7 @@ use crate::parsing::parser::Parser;
 
 mod parsing;
 mod execution;
+pub mod macros;
 
 fn main() {
     let mut file = File::open("example/fib.mps").unwrap();

@@ -1,8 +1,9 @@
-use std::collections::HashMap;
-
+use crate::option_propagate_failure_to_option;
 use crate::parsing::ast::{AST, Expression, Type};
 use crate::parsing::symbol_table::SymbolTable;
 use crate::parsing::token::Operator;
+use crate::result_propagate_failure_to_option;
+use crate::result_propagate_failure_to_result;
 
 pub struct StaticAnalyzer {
     symbol_table: SymbolTable
@@ -29,10 +30,7 @@ impl StaticAnalyzer {
                     return Some(format!("Cannot declare variable {} because it was already declared in this scope",
                                         id.clone()));
                 }
-                let expr_type = match self.analyze_expression(expr) {
-                    Ok(t) => t,
-                    Err(e) => return Some(e)
-                };
+                let expr_type = result_propagate_failure_to_option!(self.analyze_expression(expr));
                 if d_type.clone() != expr_type {
                     return Some(format!("Mismatched types variable {} was declared {} but assigned {}",
                                         id, d_type.clone(), expr_type));
@@ -40,14 +38,9 @@ impl StaticAnalyzer {
                 None
             }
             AST::Assign(id, expr) => {
-                let id_type = match self.symbol_table.retrieve_type(id.clone()) {
-                    Some(t) => t,
-                    None => return Some(format!("Cannot assign to undeclared variable {}", id.clone()))
-                };
-                let expr_type = match self.analyze_expression(expr) {
-                    Ok(t) => t,
-                    Err(e) => return Some(e)
-                };
+                let id_type = result_propagate_failure_to_option!(self.symbol_table.retrieve_type(id.clone()),
+                                                                format!("Cannot assign to undeclared variable {}", id.clone()));
+                let expr_type = result_propagate_failure_to_option!(self.analyze_expression(expr));
                 if id_type != expr_type {
                     return Some(format!("Mismatched types variable {} vas declared {} but assigned {}",
                                         id.clone(), id_type, expr_type));
@@ -68,49 +61,25 @@ impl StaticAnalyzer {
                 None
             }
             AST::IfStatement(cond, then) => {
-                match self.analyze_expression(cond) {
-                    Err(err) => return Some(err),
-                    _ => ()
-                }
+                result_propagate_failure_to_option!(self.analyze_expression(cond));
                 self.symbol_table.create_frame();
-                match self.analyze(*then) {
-                    Some(err) => return Some(err),
-                    _ => ()
-                }
+                option_propagate_failure_to_option!(self.analyze(*then));
                 self.symbol_table.remove_frame();
                 None
             }
             AST::WhileStatement(cond, body) => {
-                match self.analyze_expression(cond) {
-                    Err(err) => return Some(err),
-                    _ => ()
-                }
+                result_propagate_failure_to_option!(self.analyze_expression(cond));
                 self.symbol_table.create_frame();
-                match self.analyze(*body) {
-                    Some(err) => return Some(err),
-                    _ => ()
-                }
+                option_propagate_failure_to_option!(self.analyze(*body));
                 self.symbol_table.remove_frame();
                 None
             }
             AST::ForStatement(dec, cond, inc, body) => {
                 self.symbol_table.create_frame();
-                match self.analyze(*dec) {
-                    Some(err) => return Some(err),
-                    _ => ()
-                }
-                match self.analyze_expression(cond) {
-                    Err(err) => return Some(err),
-                    _ => ()
-                }
-                match self.analyze(*inc) {
-                    Some(err) => return Some(err),
-                    _ => ()
-                }
-                match self.analyze(*body) {
-                    Some(err) => return Some(err),
-                    _ => ()
-                }
+                option_propagate_failure_to_option!(self.analyze(*dec));
+                result_propagate_failure_to_option!(self.analyze_expression(cond));
+                option_propagate_failure_to_option!(self.analyze(*inc));
+                option_propagate_failure_to_option!(self.analyze(*body));
                 self.symbol_table.remove_frame();
                 None
             }
@@ -127,14 +96,8 @@ impl StaticAnalyzer {
                 None => Err(format!("Use of undeclared variable {}", id.clone()))
             },
             Expression::BinaryOperation(left, op, right) => {
-                let left = match self.analyze_expression(*left) {
-                    Ok(t) => t,
-                    Err(e) => return Err(e)
-                };
-                let right = match self.analyze_expression(*right) {
-                    Ok(t) => t,
-                    Err(e) => return Err(e)
-                };
+                let left = result_propagate_failure_to_result!(self.analyze_expression(*left));
+                let right = result_propagate_failure_to_result!(self.analyze_expression(*right));
                 self.analyze_operator(left, op, right)
             }
         }

@@ -4,8 +4,10 @@ use std::slice::Iter;
 
 use lazy_static::lazy_static;
 
+use crate::option_propagate_failure_to_result;
 use crate::parsing::ast::{AST, Expression, Type};
 use crate::parsing::token::{Token, TokenType};
+use crate::result_propagate_failure_to_result;
 
 lazy_static! {
     static ref PREDEFINED_TYPES: HashMap<&'static str, Type> = {
@@ -88,19 +90,13 @@ impl Parser<'_> {
 
     fn parse_print(&mut self) -> Result<AST, String> {
         self.tokens.next();
-        let expr = match self.parse_expression() {
-            Err(msg) => return Err(msg),
-            Ok(expr) => expr
-        };
+        let expr = result_propagate_failure_to_result!(self.parse_expression());
         Ok(AST::Print(expr))
     }
 
     fn parse_assignment(&mut self, id: String) -> Result<AST, String> {
         self.tokens.next();
-        let expr = match self.parse_expression() {
-            Err(msg) => return Err(msg),
-            Ok(expr) => expr
-        };
+        let expr = result_propagate_failure_to_result!(self.parse_expression());
         Ok(AST::Assign(id, expr))
     }
 
@@ -123,11 +119,7 @@ impl Parser<'_> {
                 //Assignment declaration
                 TokenType::Assignment => {
                     self.tokens.next();
-                    let expr = match self.parse_expression() {
-                        Err(msg) => return Err(msg),
-                        Ok(expr) => expr
-                    };
-                    // self.expect(TokenType::Semicolon);
+                    let expr = result_propagate_failure_to_result!(self.parse_expression());
                     Ok(AST::VarDeclarationAndAssignment(found_type, id.to_string(), expr))
                 }
                 //Simple declaration
@@ -193,60 +185,27 @@ impl Parser<'_> {
 
     fn parse_if(&mut self) -> Result<AST, String> {
         self.tokens.next();
-        let clause = match self.parse_expression() {
-            Err(msg) => return Err(msg),
-            Ok(expr) => expr
-        };
-        let block = match self.parse_block() {
-            Err(msg) => return Err(msg),
-            Ok(block) => block
-        };
-        match self.expect(TokenType::RCurlyBracket) {
-            Some(err) => return err,
-            _ => ()
-        };
+        let clause = result_propagate_failure_to_result!(self.parse_expression());
+        let block = result_propagate_failure_to_result!(self.parse_block());
+        option_propagate_failure_to_result!(self.expect(TokenType::RCurlyBracket));
         Ok(AST::IfStatement(clause, Box::new(block)))
     }
 
     fn parse_while(&mut self) -> Result<AST, String> {
         self.tokens.next();
-        let clause = match self.parse_expression() {
-            Err(msg) => return Err(msg),
-            Ok(expr) => expr
-        };
-        let block = match self.parse_block() {
-            Err(msg) => return Err(msg),
-            Ok(block) => block
-        };
-        match self.expect(TokenType::RCurlyBracket) {
-            Some(err) => return err,
-            _ => ()
-        };
+        let clause = result_propagate_failure_to_result!(self.parse_expression());
+        let block = result_propagate_failure_to_result!(self.parse_block());
+        option_propagate_failure_to_result!(self.expect(TokenType::RCurlyBracket));
         Ok(AST::WhileStatement(clause, Box::new(block)))
     }
 
     fn parse_for(&mut self) -> Result<AST, String> {
         self.tokens.next();
-        let init = match self.parse_assignment_or_declaration() {
-            Err(msg) => return Err(msg),
-            Ok(expr) => expr
-        };
-        let clause = match self.parse_expression() {
-            Err(msg) => return Err(msg),
-            Ok(expr) => expr
-        };
-        let inc = match self.parse_assignment_or_declaration() {
-            Err(msg) => return Err(msg),
-            Ok(expr) => expr
-        };
-        let block = match self.parse_block() {
-            Err(msg) => return Err(msg),
-            Ok(block) => block
-        };
-        match self.expect(TokenType::RCurlyBracket) {
-            Some(err) => return err,
-            _ => ()
-        };
+        let init = result_propagate_failure_to_result!(self.parse_assignment_or_declaration());
+        let clause = result_propagate_failure_to_result!(self.parse_expression());
+        let inc = result_propagate_failure_to_result!(self.parse_assignment_or_declaration());
+        let block = result_propagate_failure_to_result!(self.parse_block());
+        option_propagate_failure_to_result!(self.expect(TokenType::RCurlyBracket));
         Ok(AST::ForStatement(Box::new(init), clause, Box::new(inc), Box::new(block)))
     }
 
