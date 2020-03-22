@@ -39,8 +39,21 @@ macro_rules! result_propagate_failure_to_option {
 macro_rules! option_propagate_failure_to_option {
     ($maybe_error:expr) => {{
         match $maybe_error {
-            _ => (),
-            Some(e) => return Some(e)
+            Some(e) => return Some(e),
+            _ => ()
         }
     }};
+}
+
+pub trait Stack<T> {
+    fn top(&self) -> Option<T>;
+}
+
+impl<T: Clone> Stack<T> for Vec<T> {
+    fn top(&self) -> Option<T> {
+        if self.is_empty() {
+            return None;
+        }
+        self.get(self.len() - 1).map(|value| value.clone())
+    }
 }

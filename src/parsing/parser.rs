@@ -8,6 +8,7 @@ use crate::option_propagate_failure_to_result;
 use crate::parsing::ast::{AST, Expression, Type};
 use crate::parsing::token::{Token, TokenType};
 use crate::result_propagate_failure_to_result;
+use crate::macros::Stack;
 
 lazy_static! {
     static ref PREDEFINED_TYPES: HashMap<&'static str, Type> = {
@@ -241,17 +242,4 @@ fn tilt_until(operators: &mut Vec<Token>, output: &mut Vec<Expression>, stop: To
         }
     }
     false
-}
-
-trait Stack<T> {
-    fn top(&self) -> Option<T>;
-}
-
-impl<T: Clone> Stack<T> for Vec<T> {
-    fn top(&self) -> Option<T> {
-        if self.is_empty() {
-            return None;
-        }
-        self.get(self.len() - 1).map(|value| value.clone())
-    }
 }
